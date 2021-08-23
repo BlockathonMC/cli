@@ -37,11 +37,14 @@ exports.handler = async (argv) => {
         ui.writeInfo('Creating repository...');
         await createRepo(repoName, user[0].username);
 
+        ui.writeInfo('Adding topics to repo...');
+        await addRepoTopics(repoName);
+
         ui.writeInfo('Adding maintainers...');
         await addMaintainer(repoName, user[0].username);
 
         // TODO: Push a skeleton to the repo via git
-        
+
         console.log('Done!');
     } catch (e) {
         console.log('Failed to set up repo', e);
@@ -77,6 +80,28 @@ async function createRepo(name) {
     }
 }
 
+async function addRepoTopics(name) {
+    const topics = ['blockathon-2021'];
+
+    const topicsRequest = await octokit.request('PUT /repos/{owner}/{repo}/topics', {
+        owner: 'mytestorglol',
+        repo: name,
+        names: topics,
+        mediaType: {
+            previews: ['mercy']
+        }
+    });
+
+    switch (topicsRequest.status) {
+        case 200:
+            ui.writeCreate(`Added topics ${topics.join(', ')} to repo`);
+            break;
+        case 422:
+            ui.writeError('Validation failed, can\'t add topics');
+            break;
+    }
+}
+
 /**
  * Add the given  
  * 
@@ -105,4 +130,5 @@ async function addMaintainer(repoName, username) {
 }
 
 module.exports.createRepo = createRepo;
+module.exports.addRepoTopics = addRepoTopics;
 module.exports.addMaintainer = addMaintainer;

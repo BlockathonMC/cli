@@ -1,5 +1,5 @@
 {
-  "name": "cli",
+  "name": "blockathon-cli",
   "version": "1.0.0",
   "description": "Manage contestant GitHub repos in the Blockathon organization",
   "main": "index.js",

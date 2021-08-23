@@ -39,6 +39,7 @@ exports.handler = async (argv) => {
             const repoName = `${user.username}-${Math.random()}`;
 
             await setupRepoFile.createRepo(repoName, user.username);
+            await setupRepoFile.addRepoTopics(repoName);
             await setupRepoFile.addMaintainer(repoName, user.username);
         }
        
