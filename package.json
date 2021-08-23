@@ -1,0 +1,27 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "Manage contestant GitHub repos in the Blockathon organization",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlockathonContest/cli.git"
+  },
+  "author": "Luke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlockathonContest/cli/issues"
+  },
+  "homepage": "https://github.com/BlockathonContest/cli#readme",
+  "dependencies": {
+    "@octokit/core": "^3.5.1",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.2",
+    "easy-table": "^1.1.1",
+    "mysql2": "^2.3.0",
+    "yargs": "^17.1.1"
+  }
+}
