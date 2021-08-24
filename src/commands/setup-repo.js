@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const { query } = require('../data/mysql');
 const octokit = require('../github');
 const ui = require('../cli/ui');
+const config = require('../../config.json');
 
 exports.command = 'setup-repo <contest> <user>';
 exports.describe = 'Setup GitHub repo';
@@ -14,41 +15,41 @@ exports.builder = (yargs) => {
 }
 
 exports.handler = async (argv) => {
-    try {
-        if (Number.isNaN(argv.contest) || Number.isNaN(argv.user)) {
-            return ui.writeError('Invalid contest or user id');
-        }
-
-        if (!argv.force) {
-            const contestant = await query('SELECT * FROM contestants WHERE user = ? AND contest = ?', [argv.user, argv.contest]);
-
-            if (contestant.length === 0) {
-                return ui.writeWarning(`Contestant with id ${argv.user} not found for contest ${argv.contest}, did you mean to use --force?`);
-            }
-        }
-
-        const user = await query('SELECT * FROM users WHERE id = ?', [argv.user]);
-        if (user.length === 0) {
-            return ui.writeError(`User with id ${argv.user} not found`);
-        }
-
-        const repoName = `${user[0].username}-${Math.random()}`;
-
-        ui.writeInfo('Creating repository...');
-        await createRepo(repoName, user[0].username);
-
-        ui.writeInfo('Adding topics to repo...');
-        await addRepoTopics(repoName);
-
-        ui.writeInfo('Adding maintainers...');
-        await addMaintainer(repoName, user[0].username);
-
-        // TODO: Push a skeleton to the repo via git
-
-        console.log('Done!');
-    } catch (e) {
-        console.log('Failed to set up repo', e);
+    if (!config.githubAccessToken) {
+        return ui.writeError('Missing github access token in config');
     }
+    if (Number.isNaN(argv.contest) || Number.isNaN(argv.user)) {
+        return ui.writeError('Invalid contest or user id');
+    }
+
+    if (!argv.force) {
+        const contestant = await query('SELECT * FROM contestants WHERE user = ? AND contest = ?', [argv.user, argv.contest]);
+
+        if (contestant.length === 0) {
+            return ui.writeWarning(`Contestant with id ${argv.user} not found for contest ${argv.contest}, did you mean to use --force?`);
+        }
+    }
+
+    const user = await query('SELECT * FROM users WHERE id = ?', [argv.user]);
+    if (user.length === 0) {
+        return ui.writeError(`User with id ${argv.user} not found`);
+    }
+
+    const repoName = `${user[0].username}-${Math.random()}`;
+
+    ui.writeInfo('Creating repository...');
+    await createRepo(repoName, user[0].username);
+
+    ui.writeInfo('Adding topics to repo...');
+    await addRepoTopics(repoName);
+
+    ui.writeInfo('Adding maintainers...');
+    await addMaintainer(repoName, user[0].username);
+
+    // TODO: Push a skeleton to the repo via git
+
+    console.log('Done!');
+
     process.exit();
 }
 
