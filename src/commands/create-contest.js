@@ -29,7 +29,7 @@ exports.handler = async (argv) => {
         argv.name, argv.year, argv.slug, argv.summary, ''
     ]);
 
-    if (insert.insertId === 0) {
+    if (insert.affectedRows === 0) {
         return ui.writeError('Contest wasn\'t added to database');
     }
 
